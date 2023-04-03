@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -102,7 +101,7 @@ func (state *BotwSave) Convert() {
 
 		fmt.Printf("Processing %s\n", saveFilename)
 
-		content, err := ioutil.ReadFile(saveFilename)
+		content, err := os.ReadFile(saveFilename)
 		check(err)
 
 		contentLength := len(content) / 4
@@ -141,7 +140,7 @@ func (state *BotwSave) Convert() {
 
 		}
 
-		ioutil.WriteFile(saveFilename, content, fs.ModePerm)
+		os.WriteFile(saveFilename, content, fs.ModePerm)
 
 	}
 

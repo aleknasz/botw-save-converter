@@ -99,7 +99,7 @@ func (state *BotwSave) Convert() {
 
 	for _, saveFilename := range matches {
 
-		fmt.Printf("Processing %s\n", saveFilename)
+		fmt.Printf("Processing .%s\n", strings.Replace(saveFilename, state.sourceFolder, "", 1))
 
 		content, err := os.ReadFile(saveFilename)
 		check(err)

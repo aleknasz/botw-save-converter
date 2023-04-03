@@ -188,9 +188,9 @@ func main() {
 
 	fmt.Print("Enter path to convert: ")
 
-	var inputFolder string
-	_, err := fmt.Scanln(&inputFolder)
-	check(err)
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	inputFolder := scanner.Text()
 
 	var saveFiles BotwSave
 

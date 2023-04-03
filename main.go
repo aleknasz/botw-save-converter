@@ -108,7 +108,6 @@ func (state *BotwSave) Convert() {
 		contentLength := len(content) / 4
 		var inPos = 0
 		var pos = 0
-		var skip = false
 
 		if strings.Contains(saveFilename, "trackblock") {
 			inPos = 4
@@ -125,22 +124,19 @@ func (state *BotwSave) Convert() {
 			if HashesContain(i32) {
 				writeReversed(content, inPos, buffer)
 				pos += 1
-				skip = true
 			} else {
-				skip = false
-			}
-
-			if !skip && !ItemsContain(buffer) {
-				writeReversed(content, inPos, buffer)
-			} else if !skip {
-				pos += 1
-				for i := 0; i < 16; i += 1 {
-					inPos = (pos + (i * 2)) * 4
-					_, buffer := readUInt32(content, inPos)
+				if !ItemsContain(buffer) {
 					writeReversed(content, inPos, buffer)
-				}
+				} else {
+					pos += 1
+					for i := 0; i < 16; i += 1 {
+						inPos = (pos + (i * 2)) * 4
+						_, buffer := readUInt32(content, inPos)
+						writeReversed(content, inPos, buffer)
+					}
 
-				pos += 30
+					pos += 30
+				}
 			}
 
 		}
@@ -149,7 +145,7 @@ func (state *BotwSave) Convert() {
 
 	}
 
-	fmt.Printf("Successfully finished converting %s save files\n", SaveTypeName(state.saveType))
+	fmt.Printf("Finished converting %s save files to %s\n", SaveTypeName(state.saveType, false), SaveTypeName(state.saveType, true))
 }
 
 func (state *BotwSave) Load(sourceFolder string) {
@@ -169,18 +165,26 @@ func (state *BotwSave) Load(sourceFolder string) {
 	state.saveType = binary.LittleEndian.Uint32(b4)
 }
 
-func SaveTypeName(saveType uint32) string {
+func SaveTypeName(saveType uint32, opposite bool) string {
 	if saveType == WiiU || saveType == WiiU_B {
-		return "Wii U"
+		if opposite {
+			return "Switch"
+		} else {
+			return "Wii U"
+		}
 	} else if saveType == Switch || saveType == Switch_B {
-		return "Switch"
+		if opposite {
+			return "Wii U"
+		} else {
+			return "Switch"
+		}
 	}
-	return "Unknown"
+	return "unknown"
 }
 
 func main() {
 
-	fmt.Println("Zelda Breath of The Wild Save Files converter")
+	fmt.Println("Zelda: Breath of The Wild - save files converter")
 
 	fmt.Print("Enter path to convert: ")
 

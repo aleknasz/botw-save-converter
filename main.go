@@ -189,7 +189,7 @@ func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
-	inputFolder := scanner.Text()
+	inputFolder := strings.TrimSpace(scanner.Text())
 
 	var saveFiles BotwSave
 

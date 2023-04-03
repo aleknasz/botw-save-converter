@@ -196,6 +196,8 @@ func main() {
 
 	saveFiles.Load(inputFolder)
 
+	// TODO: Ask for confirmation for conversion in place
+
 	saveFiles.Convert()
 
 }

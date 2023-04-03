@@ -145,7 +145,7 @@ func (state *BotwSave) Convert() {
 
 	}
 
-	fmt.Printf("Finished converting %s save files to %s\n", SaveTypeName(state.saveType, false), SaveTypeName(state.saveType, true))
+	fmt.Printf("Finished converting %s save files to %s\n", state.SaveTypeName(false), state.SaveTypeName(true))
 }
 
 func (state *BotwSave) Load(sourceFolder string) {
@@ -165,14 +165,14 @@ func (state *BotwSave) Load(sourceFolder string) {
 	state.saveType = binary.LittleEndian.Uint32(b4)
 }
 
-func SaveTypeName(saveType uint32, opposite bool) string {
-	if saveType == WiiU || saveType == WiiU_B {
+func (state *BotwSave) SaveTypeName(opposite bool) string {
+	if state.saveType == WiiU || state.saveType == WiiU_B {
 		if opposite {
 			return "Switch"
 		} else {
 			return "Wii U"
 		}
-	} else if saveType == Switch || saveType == Switch_B {
+	} else if state.saveType == Switch || state.saveType == Switch_B {
 		if opposite {
 			return "Wii U"
 		} else {

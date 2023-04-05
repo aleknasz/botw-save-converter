@@ -147,21 +147,26 @@ func (state *BotwSave) Convert() {
 	fmt.Printf("Finished converting %s save files to %s\n", state.SaveTypeName(false), state.SaveTypeName(true))
 }
 
-func (state *BotwSave) Load(sourceFolder string) {
+func (state *BotwSave) Load(sourceFolder string) bool {
 	state.sourceFolder = sourceFolder
 
 	header := fmt.Sprintf("%s/option.sav", sourceFolder)
 
 	f, err := os.Open(header)
-	check(err)
+	if err != nil {
+		return false
+	}
 
 	defer f.Close()
 
 	r4 := bufio.NewReader(f)
 	b4, err := r4.Peek(4)
-	check(err)
+	if err != nil {
+		return false
+	}
 
 	state.saveType = binary.LittleEndian.Uint32(b4)
+	return true
 }
 
 func (state *BotwSave) SaveTypeName(opposite bool) string {
@@ -181,22 +186,29 @@ func (state *BotwSave) SaveTypeName(opposite bool) string {
 	return "unknown"
 }
 
+func StringPrompt(label string, args ...interface{}) string {
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Fprintf(os.Stderr, label, args...)
+	scanner.Scan()
+	return strings.TrimSpace(scanner.Text())
+}
+
 func main() {
 
 	fmt.Println("Zelda: Breath of The Wild - save files converter")
 
-	fmt.Print("Enter path to convert: ")
-
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-	inputFolder := strings.TrimSpace(scanner.Text())
+	inputFolder := StringPrompt("Enter path to convert: ")
 
 	var saveFiles BotwSave
 
-	saveFiles.Load(inputFolder)
+	if saveFiles.Load(inputFolder) {
+		answer := StringPrompt("Found %s save files, do you want to proceed [Y/n]: ", saveFiles.SaveTypeName(false))
 
-	// TODO: Ask for confirmation for conversion in place
-
-	saveFiles.Convert()
+		if !strings.EqualFold(answer, "n") {
+			saveFiles.Convert()
+		}
+	} else {
+		fmt.Println("Save files not found or are corrupted")
+	}
 
 }
